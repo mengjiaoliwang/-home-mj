@@ -1,0 +1,68 @@
+package controllers
+
+//发布订单[post]
+//beego.Router("api/v1.0/orders",&controllers.PostOrderReleaseController{},"post:PostOrderRelease")
+
+import (
+	"encoding/json"
+	//	"fmt"
+	"github.com/astaxie/beego"
+	//	"github.com/astaxie/beego/orm"
+	"iHome_go_1/models"
+	"time"
+)
+
+type PostOrderController struct {
+	beego.Controller
+}
+
+type PostOrderInfo struct {
+	House_id   string `json:"house_id"`
+	Start_date string `json:"start_date"`
+	End_date   string `json:"end_date"`
+}
+type Order struct {
+	Order_id string `json:"order_id"`
+}
+type PostRespOrderInfo struct {
+	Errno  string `json:"errno"`
+	Errmsg string `json:"errmsg"`
+	Data   Order  `json:"data"`
+}
+
+func (this *PostOrderController) RetData(resp interface{}) {
+	//给客户端返回json数据
+	this.Data["json"] = resp
+	//将json写回客户端
+	this.ServeJSON()
+}
+func (this *PostOrderController) PostOrder() {
+
+	resp := PostRespOrderInfo{Errno: models.RECODE_OK, Errmsg: models.RecodeText(models.RECODE_OK)}
+	defer this.RetData(&resp)
+	user_id := this.GetSession("user_id")
+	beego.Info("user_id:", user_id)
+	//得到用户请求的json数据
+
+	var postOrderInfo PostOrderInfo
+	json.Unmarshal(this.Ctx.Input.RequestBody, &postOrderInfo)
+	if postOrderInfo.House_id == "" || postOrderInfo.Start_date == "" || postOrderInfo.Start_date == "" {
+		beego.Info("信息有误，请重新输入")
+		resp.Errno = models.RECODE_NODATA
+		resp.Errmsg = models.RecodeText(resp.Errno)
+		return
+	}
+	beego.Info(postOrderInfo)
+	t1, err := time.Parse("2006-01-02", postOrderInfo.Start_date)
+	t2, err := time.Parse("2006-01-02", postOrderInfo.End_date)
+	if err == nil && t1.After(t2) {
+		beego.Info("时间输入有误")
+		resp.Errno = models.RECODE_NODATA
+		resp.Errmsg = models.RecodeText(resp.Errno)
+		return
+	}
+
+	beego.Info("开始结束时间为：", t1, t2)
+
+	return
+}
