@@ -90,7 +90,7 @@ func (this *UserCorrectPostController) UserCorrectPost() {
 	}
 
 	//拼接一个完整的路径
-	avatar_url := "http://120.78.214.107:9000/" + fileId
+	avatar_url := "http://192.168.237.132:9000/" + fileId
 	beego.Info(avatar_url)
 	Resp.Data.Url = avatar_url
 	beego.Info(Resp.Data.Url)

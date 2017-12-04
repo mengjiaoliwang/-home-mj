@@ -3,10 +3,10 @@ package controllers
 
 import (
 	//	_ "encoding/json"
+	"LvHm/models"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"iHome_go_1/models"
 	//	_ "time"
 )
 
